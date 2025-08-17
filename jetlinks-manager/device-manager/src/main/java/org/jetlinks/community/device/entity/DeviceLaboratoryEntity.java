@@ -40,8 +40,7 @@ public class DeviceLaboratoryEntity extends GenericTreeSortSupportEntity<String>
 
     @Schema(description = "实验室编码")
     @Column(nullable = false, length = 64)
-    @NotBlank(message = "实验室编码不能为空", groups = CreateGroup.class)
-    @Pattern(regexp = "^[0-9a-zA-Z_\\-]+$", message = "实验室编码只能由数字,字母,下划线和中划线组成")
+    @DefaultValue(generator = Generators.CURRENT_TIME)
     private String code;
 
     @Schema(description = "实验室名称")
@@ -51,7 +50,7 @@ public class DeviceLaboratoryEntity extends GenericTreeSortSupportEntity<String>
 
     @Schema(description = "实验室描述")
     @Column
-    private String description;
+    private String describe;
 
     @Schema(description = "实验室地址")
     @Column

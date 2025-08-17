@@ -57,4 +57,32 @@ public class DeviceLaboratoryService extends GenericReactiveTreeSupportCrudServi
             .execute()
             .then();
     }
+
+    /**
+     * 生成实验室编码
+     */
+    public String generateLaboratoryCode() {
+        return "LAB_" + System.currentTimeMillis();
+    }
+
+    /**
+     * 新增实验室时自动生成编码
+     */
+    public Mono<DeviceLaboratoryEntity> insertWithCode(DeviceLaboratoryEntity entity) {
+        // 新增时自动生成编码
+        if (entity.getCode() == null || entity.getCode().trim().isEmpty()) {
+            entity.setCode(generateLaboratoryCode());
+        }
+        return this.insert(entity)
+            .then(Mono.just(entity));
+    }
+
+    /**
+     * 更新实验室信息时不修改编码
+     */
+    public Mono<Integer> updateByIdWithoutCode(String id, DeviceLaboratoryEntity entity) {
+        // 编辑时不修改编码
+        entity.setCode(null);
+        return this.updateById(id, entity);
+    }
 }
