@@ -198,7 +198,18 @@ public class DeviceLaboratoryController implements ReactiveServiceCrudController
         if (request.getDeviceIds() == null || request.getDeviceIds().isEmpty()) {
             return Mono.error(new IllegalArgumentException("设备ID列表不能为空"));
         }
-        return laboratoryDeviceService.assignDevices(laboratoryId, request.getDeviceIds());
+        return laboratoryDeviceService
+            .assignDevices(laboratoryId, request.getDeviceIds())
+            .then(
+                laboratoryDeviceService
+                    .getDeviceCount(laboratoryId)
+                    .flatMap(count -> laboratoryService
+                        .createUpdate()
+                        .set(DeviceLaboratoryEntity::getDeviceCount, count.intValue())
+                        .where(DeviceLaboratoryEntity::getId, laboratoryId)
+                        .execute()
+                        .then())
+            );
     }
 
     /**
@@ -211,6 +222,17 @@ public class DeviceLaboratoryController implements ReactiveServiceCrudController
         if (request.getDeviceIds() == null || request.getDeviceIds().isEmpty()) {
             return Mono.error(new IllegalArgumentException("设备ID列表不能为空"));
         }
-        return laboratoryDeviceService.removeDevices(laboratoryId, request.getDeviceIds());
+        return laboratoryDeviceService
+            .removeDevices(laboratoryId, request.getDeviceIds())
+            .then(
+                laboratoryDeviceService
+                    .getDeviceCount(laboratoryId)
+                    .flatMap(count -> laboratoryService
+                        .createUpdate()
+                        .set(DeviceLaboratoryEntity::getDeviceCount, count.intValue())
+                        .where(DeviceLaboratoryEntity::getId, laboratoryId)
+                        .execute()
+                        .then())
+            );
     }
 }
